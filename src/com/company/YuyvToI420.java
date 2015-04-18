@@ -15,14 +15,18 @@ public class YuyvToI420 {
 
     public byte[] convertData(byte[] data){
         byte[] processedData = new byte[mWidth*mHeight*(3/2)];
-
-
+        byte[] uData = new byte[mWidth*mHeight/4];
+        byte[] vData = new byte[mWidth*mHeight/4];
+        byte[] yData = new byte[mWidth*mHeight];
 
 
 
 
         return processedData;
     }
+
+
+
 
 
 }
