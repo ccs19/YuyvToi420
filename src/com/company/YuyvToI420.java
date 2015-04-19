@@ -18,39 +18,27 @@ public class YuyvToI420 {
     }
 
     public byte[] convertData(byte[] data){
-        //byte[] processedData = new byte[mWidth*mHeight*(3/2)];
-        byte[] uData = new byte[mWidth*mHeight/4];
-        byte[] vData = new byte[mWidth*mHeight/4];
-        byte[] yData = new byte[mWidth*mHeight];
+        byte[] processedDataByte = new byte[mWidth*mHeight + (mWidth*mHeight/2)];
 
-        int yDataIndex = 0, uDataIndex = 0, vDataIndex = 0;
-        int index = 0;
+        int uIndexOffset = mWidth*mHeight;
+        int uvSize = mWidth*mHeight/4;
+
+        int index;
 
         for(int y = 0; y < mHeight; y++){
             for(int x = 0; x < mWidth; x++) {
-                index = (x + y*mWidth)*2;
-                System.out.println(index);
-                yData[yDataIndex++] = data[index];
+                index = (x + y * mWidth) * 2;
+                processedDataByte[x + mWidth*y] = data[index];
                 if (y % 2 == 0 && x%2 == 0) {
-                    uData[uDataIndex++] = clip(data[index + 1], data[index + 1 + 4]);
-                    vData[vDataIndex++] = clip(data[index + 3], data[index + 3 + 4]);
+                    int uIndex = uIndexOffset + x/2 + y*(mWidth/4);
+                    int vIndex = uIndex + uvSize ;
+                    //System.out.printf("index u/v/max %d %d %d\n", uIndex, vIndex, processedDataByte.length);
+                    processedDataByte[uIndex] = clip(data[index + 1], data[index + 1 + 4]);
+                    processedDataByte[vIndex] = clip(data[index + 3], data[index + 3 + 4]);
                 }
             }
         }
-
-
-
-
-        ByteArrayOutputStream processedData = new ByteArrayOutputStream();
-        try {
-            processedData.write(yData);
-            processedData.write(uData);
-            processedData.write(vData);
-        }catch(IOException e){
-            System.err.println("Failed to write to ByteArrayOutputStream " + e);
-        }
-
-        return processedData.toByteArray();
+        return processedDataByte;
     }
 
 
@@ -58,7 +46,6 @@ public class YuyvToI420 {
         int byteOne = Byte.toUnsignedInt(one);
         int byteTwo = Byte.toUnsignedInt(two);
         int result = (byteOne+byteTwo)/2;
-        //System.out.println(result&0xff);
         if(result > 255) return Byte.MAX_VALUE;
         else if(result < 0) return Byte.MIN_VALUE;
         else return (byte)(result&0xff);
