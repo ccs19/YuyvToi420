@@ -50,13 +50,13 @@ public class YuyvToI420 {
         for(int x = 0; x < uData.length/2; x++) {
             byte uDataOne, uDataTwo, vDataOne, vDataTwo;
             if(x%(mWidth/2*rowOffset) == 0 && x>=(mWidth/2*rowOffset))rowOffset++;
-            uDataOne = uData[x+(mWidth/2)*(rowOffset-1)];
-            uDataTwo = uData[x+(mWidth/2)*(rowOffset-1) + (mWidth/2)];
-            vDataOne = vData[x+(mWidth/2)*(rowOffset-1)];
-            vDataTwo = vData[x+(mWidth/2)*(rowOffset-1) + (mWidth/2)];
+            uDataOne = (uData[x+(mWidth/2)*(rowOffset-1)]);
+            uDataTwo = (uData[x+(mWidth/2)*(rowOffset-1) + (mWidth/2)]);
+            vDataOne = (vData[x+(mWidth/2)*(rowOffset-1)]);
+            vDataTwo = (vData[x+(mWidth/2)*(rowOffset-1) + (mWidth/2)]);
 
-            uDataAveraged[uAvgInd++] = (byte) (((uDataOne + uDataTwo) / 2) & 0xff);
-            vDataAveraged[vAvgInd++] = (byte) (((vDataOne + vDataTwo) / 2) & 0xff);
+            uDataAveraged[uAvgInd++] = clip(uDataOne, uDataTwo);
+            vDataAveraged[vAvgInd++] = clip(vDataOne, vDataTwo);
         }
 
         System.out.println("index " + vAvgInd);
@@ -74,6 +74,15 @@ public class YuyvToI420 {
         }
 
         return processedData.toByteArray();
+    }
+
+
+    private byte clip(byte one, byte two){
+        int result = (one+two)/2;
+        System.out.println(result&0xff);
+        if((result&0xff) > 255) return Byte.MAX_VALUE;
+        else if((result&0xff) < 0) return Byte.MIN_VALUE;
+        else return (byte)(result&0xff);
     }
 
 
