@@ -23,8 +23,8 @@ public class YuyvToI420 {
         byte[] vData = new byte[mWidth*mHeight/2];
         byte[] yData = new byte[mWidth*mHeight];
 
-        byte[] uDataAveraged = new byte[mWidth*mHeight/2];
-        byte[] vDataAveraged = new byte[mWidth*mHeight/2];
+        byte[] uDataAveraged = new byte[mWidth*mHeight/4];
+        byte[] vDataAveraged = new byte[mWidth*mHeight/4];
 
         int yDataIndex = 0, uDataIndex = 0, vDataIndex = 0;
 
@@ -40,25 +40,26 @@ public class YuyvToI420 {
                 }
             }
         }
+        System.out.println("index " + uDataIndex);
 
 
         //Parse UV data
         int uAvgInd = 0;
         int vAvgInd = 0;
-        for(int x = 0; x < mWidth/2 ; x++){
-            for(int y = 0; y < mHeight/2; y++){
-                byte uDataOne, uDataTwo, vDataOne, vDataTwo;
-                uDataOne = uData[y*mWidth + x];
-                uDataTwo = uData[y*mWidth+(mWidth/2)+x];
-                vDataOne = vData[y*mWidth + x];
-                vDataTwo = vData[y*mWidth+(mWidth/2)+x];
+        int rowOffset = 1;
+        for(int x = 0; x < uData.length/2; x++) {
+            byte uDataOne, uDataTwo, vDataOne, vDataTwo;
+            if(x%(mWidth/2*rowOffset) == 0 && x>=(mWidth/2*rowOffset))rowOffset++;
+            uDataOne = uData[x+(mWidth/2)*(rowOffset-1)];
+            uDataTwo = uData[x+(mWidth/2)*(rowOffset-1) + (mWidth/2)];
+            vDataOne = vData[x+(mWidth/2)*(rowOffset-1)];
+            vDataTwo = vData[x+(mWidth/2)*(rowOffset-1) + (mWidth/2)];
 
-                uDataAveraged[uAvgInd++] = (byte)(((uDataOne+uDataTwo)/2)&0xff);
-                vDataAveraged[vAvgInd++] = (byte)(((vDataOne+vDataTwo)/2)&0xff);
-            }
+            uDataAveraged[uAvgInd++] = (byte) (((uDataOne + uDataTwo) / 2) & 0xff);
+            vDataAveraged[vAvgInd++] = (byte) (((vDataOne + vDataTwo) / 2) & 0xff);
         }
 
-
+        System.out.println("index " + vAvgInd);
 
 
 
